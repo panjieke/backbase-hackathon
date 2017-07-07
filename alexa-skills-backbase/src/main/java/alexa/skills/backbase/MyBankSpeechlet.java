@@ -3,6 +3,7 @@ package alexa.skills.backbase;
 import alexa.skills.backbase.lib.RestClient;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.slu.Intent;
+import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.*;
 import com.amazon.speech.speechlet.interfaces.audioplayer.AudioItem;
 import com.amazon.speech.speechlet.interfaces.audioplayer.PlayBehavior;
@@ -28,7 +29,9 @@ public class MyBankSpeechlet implements SpeechletV2 {
 
     private static final String STATUS_INTENT = "GetStatus";
     private static final String TRANSFER_INTENT = "Transfer";
-    private static final String FIRST_TIME_TRANSFER = "FirstTimeTransfer";
+
+    private static final String PERSON_NAME_SLOT = "PersonName";
+    private static final String DIRECTION_SLOT = "Direction";
 
     private static final String WELCOME_MESSAGE = "Hi Rik, I hope everything is alright, you seem to be short on funds lately. Anything I should know about?";
     private static final String GOODBYE_MESSAGE = "Thank you and enjoy your day.";
@@ -63,23 +66,16 @@ public class MyBankSpeechlet implements SpeechletV2 {
 
         Intent intent = request.getIntent();
         String intentName = (intent != null) ? intent.getName() : new String();
-        Session session = speechletRequestEnvelope.getSession();
 
         switch (intentName) {
             case STOP_INTENT:
             case NO_INTENT:
-                return getGoodByeResponse();
             case YES_INTENT:
-                return sendTransferRequest(ANOTHER_TRANSFER_MESSAGE, session);
+                return getGoodByeResponse();
             case STATUS_INTENT:
                 return getStatusResponse();
-            case TRANSFER_INTENT: {
-                if ("true".equals(session.getAttribute(FIRST_TIME_TRANSFER))) {
-                    return sendTransferRequest(TRANSFER_MESSAGE, session);
-                } else {
-                    return sendAnotherTransferRequest(ANOTHER_TRANSFER_MESSAGE, session);
-                }
-            }
+            case TRANSFER_INTENT:
+                return sendTransferRequest(intent);
             default:
                 return getUnknownCommandResponse();
         }
@@ -104,14 +100,16 @@ public class MyBankSpeechlet implements SpeechletV2 {
         return createSimpleSsmlResponse(ACCOUNT_BALANCE_MESSAGE);
     }
 
-    private SpeechletResponse sendTransferRequest(String speechText, Session session) {
-        session.setAttribute(FIRST_TIME_TRANSFER, "true");
-        return createRepromptResponse(speechText, "");
-    }
+    private SpeechletResponse sendTransferRequest(Intent intent) {
+        String direction = intent.getSlot(DIRECTION_SLOT).getValue();
+        String person = intent.getSlot(PERSON_NAME_SLOT).getValue();
+        log.info("Direction: " + direction + " Person: " + person);
 
-    private SpeechletResponse sendAnotherTransferRequest(String speechText, Session session) {
-        session.setAttribute(FIRST_TIME_TRANSFER, "false");
-        return createRepromptResponse(speechText, "");
+        if ("from".equals(direction) && person.toLowerCase().contains("account")) {
+            return createRepromptResponse(TRANSFER_MESSAGE, "");
+        }
+
+        return createRepromptResponse(ANOTHER_TRANSFER_MESSAGE, "");
     }
 
     private SpeechletResponse getUnknownCommandResponse() {

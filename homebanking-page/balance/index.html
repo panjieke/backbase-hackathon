@@ -90,10 +90,22 @@
        <script>  
      
 
+       function transformJSON(inputJSON){
+         var len = inputJSON.transactions.length,
+             outputJSON = new Array(),
+             i;
+
+         for ( i=0; i < len; i+=1 ) {
+            outputJSON.push( { "transaction": "Bank Transfer to "+inputJSON.transactions[i].other_account.holder.name , "amount": inputJSON.transactions[i].details.value.amount+" USD" } );   
+         }
+         return outputJSON;
+       }
+      
+
       function updateBankStatement(handleData) {
           $.ajax({
             type: 'GET',
-            url:"https://api.myjson.com/bins/1fisnb",  
+            url:"https://apisandbox.openbankproject.com/obp/v1.2.1/banks/test-bank/accounts/RR-000001/owner/transactions",  
             contentType: 'application/json; charset=utf-8',
             success:function(data) {
               handleData(data); 
@@ -102,13 +114,13 @@
         };
 
         updateBankStatement(function(output){
-            //alert(JSON.stringify(output));
+            var transactionsList = transformJSON(output);
             $('#demo-table').simple_datagrid(
               {
-                data: output
+                data: transactionsList
               }
-            );
-            console.log(JSON.stringify(output));
+            );       
+            //console.log(JSON.stringify(transactionsList));
         });
 
         setInterval(function(){
@@ -116,12 +128,9 @@
                 $('#demo-table').simple_datagrid('loadData', output);
                 console.log(JSON.stringify(output));
             });
-      },5000);
+      },60000);
 
-       
-
-
-
+    
 
        </script>
 

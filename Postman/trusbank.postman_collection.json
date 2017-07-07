@@ -1,0 +1,96 @@
+{
+	"id": "3be84eac-f876-27ea-f1b1-11fa23facfda",
+	"name": "trusbank",
+	"description": "",
+	"order": [
+		"597a8aab-5872-c6d2-4de0-b552e2240ab7",
+		"b4b2b818-3f0a-2fb2-924e-114a43a89afe",
+		"e8c6bb35-cc85-5fe2-0688-5cdbe320c4d2"
+	],
+	"folders": [],
+	"timestamp": 1499454333388,
+	"owner": 0,
+	"public": false,
+	"requests": [
+		{
+			"id": "597a8aab-5872-c6d2-4de0-b552e2240ab7",
+			"headers": "Content-Type: application/json; charset=utf-8\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json; charset=utf-8",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "https://api.myjson.com/bins",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": [],
+			"dataMode": "raw",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1499454493237,
+			"name": "Create",
+			"description": "",
+			"collectionId": "3be84eac-f876-27ea-f1b1-11fa23facfda",
+			"responses": [],
+			"rawModeData": "[\n  {\n    \"latin_name\": \"Persea americana\",\n    \"name\": \"Avocado\"\n  },\n  {\n    \"latin_name\": \"Capsicum annuum\",\n    \"name\": \"Bell pepper\"\n  }\n]"
+		},
+		{
+			"id": "b4b2b818-3f0a-2fb2-924e-114a43a89afe",
+			"headers": "",
+			"headerData": [],
+			"url": "https://api.myjson.com/bins/1fisnb",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "GET",
+			"data": [],
+			"dataMode": "raw",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1499454582881,
+			"name": "Get bank Statement",
+			"description": "",
+			"collectionId": "3be84eac-f876-27ea-f1b1-11fa23facfda",
+			"responses": [],
+			"rawModeData": ""
+		},
+		{
+			"id": "e8c6bb35-cc85-5fe2-0688-5cdbe320c4d2",
+			"headers": "Content-Type: application/json; charset=utf-8\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json; charset=utf-8",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "https://api.myjson.com/bins/1fisnb",
+			"queryParams": [],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "PUT",
+			"data": [],
+			"dataMode": "raw",
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1499455001519,
+			"name": "Update bank Statement",
+			"description": "",
+			"collectionId": "3be84eac-f876-27ea-f1b1-11fa23facfda",
+			"responses": [],
+			"rawModeData": "[\n    {\n        \"transaction\": \"Bank Transfer to Peter\",\n        \"amount\": \"12,34 €\"\n    },\n    {\n        \"transaction\": \"Bank Transfer to Maria\",\n        \"amount\": \"22,00 €\"\n    }\n]"
+		}
+	]
+}

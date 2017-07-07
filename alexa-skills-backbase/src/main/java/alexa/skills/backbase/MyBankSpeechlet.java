@@ -22,6 +22,11 @@ public class MyBankSpeechlet implements SpeechletV2 {
 
     private static final Logger log = LoggerFactory.getLogger(MyBankSpeechlet.class);
     private final RestClient restClient = new RestClient();
+
+    private static final String BANK_ID = "test-bank";
+    private static final String ACCOUNT_ID = "RR-000001";
+    private static final String VIEW_ID = "owner";
+
     private static final String MY_BANK_CART = "MyBank";
     private static final String STOP_INTENT = "AMAZON.StopIntent";
     private static final String NO_INTENT = "AMAZON.NoIntent";
@@ -33,11 +38,11 @@ public class MyBankSpeechlet implements SpeechletV2 {
     private static final String PERSON_NAME_SLOT = "PersonName";
     private static final String DIRECTION_SLOT = "Direction";
 
-    private static final String WELCOME_MESSAGE = "Hi Rik, I hope everything is alright, you seem to be short on funds lately. Anything I should know about?";
+    private static final String WELCOME_MESSAGE = "Hi %s, I hope everything is alright, you seem to be short on funds lately. Anything I should know about?";
     private static final String GOODBYE_MESSAGE = "Thank you and enjoy your day.";
-    private static final String ACCOUNT_BALANCE_MESSAGE = "You have 1000 euros in your debit account.";
-    private static final String TRANSFER_MESSAGE = "okay done, don't forget you still owe Lisa 20 euros for those drinks last Friday";
-    private static final String ANOTHER_TRANSFER_MESSAGE = "done, your balance is now 450 euro's. Anything else I can do for you today?";
+    private static final String ACCOUNT_BALANCE_MESSAGE = "Well, um, unfortunately it's currently %s, in the red, Let me play some soothing music for you.";
+    private static final String TRANSFER_MESSAGE = "okay done, don't forget you still owe Lisa 20 USD for those drinks last Friday";
+    private static final String ANOTHER_TRANSFER_MESSAGE = "done, your balance is now 450 USD. Anything else I can do for you today?";
     private static final String UNKNOWN_MESSAGE = "Sorry, I could not understand your question.";
 
     @Override
@@ -89,7 +94,9 @@ public class MyBankSpeechlet implements SpeechletV2 {
     }
 
     private SpeechletResponse getWelcomeResponse() {
-        return createRepromptResponse(WELCOME_MESSAGE, "");
+        String name = restClient.getAccountDisplayName(BANK_ID, ACCOUNT_ID, VIEW_ID);
+
+        return createRepromptResponse(String.format(WELCOME_MESSAGE, name), "");
     }
 
     private SpeechletResponse getGoodByeResponse() {
@@ -97,7 +104,9 @@ public class MyBankSpeechlet implements SpeechletV2 {
     }
 
     private SpeechletResponse getStatusResponse() {
-        return createSimpleSsmlResponse(ACCOUNT_BALANCE_MESSAGE);
+        String balance = restClient.getAccountBalance(BANK_ID, ACCOUNT_ID, VIEW_ID);
+
+        return createSimpleSsmlResponse(String.format(ACCOUNT_BALANCE_MESSAGE, balance));
     }
 
     private SpeechletResponse sendTransferRequest(Intent intent) {
@@ -105,7 +114,7 @@ public class MyBankSpeechlet implements SpeechletV2 {
         String person = intent.getSlot(PERSON_NAME_SLOT).getValue();
         log.info("Direction: " + direction + " Person: " + person);
 
-        if ("from".equals(direction) && person.toLowerCase().contains("account")) {
+        if (person.toLowerCase().contains("account")) {
             return createRepromptResponse(TRANSFER_MESSAGE, "");
         }
 

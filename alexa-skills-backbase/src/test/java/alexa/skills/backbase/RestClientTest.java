@@ -2,7 +2,11 @@ package alexa.skills.backbase;
 
 import alexa.skills.backbase.lib.RestClient;
 import alexa.skills.backbase.model.AccountDetails;
+import alexa.skills.backbase.model.TransactionsResponse;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
+import org.junit.matchers.JUnitMatchers;
 
 import static org.junit.Assert.*;
 
@@ -47,6 +51,24 @@ public class RestClientTest {
         andBalanceShouldBeUpdated();
     }
 
+    @Test
+    public void getAllTransactions() {
+        givenAccountDetails();
+        whenRequestAllTransactions();
+        thenSomeTransactionsShouldBeReturned();
+    }
+
+    private void whenRequestAllTransactions() {
+        transactionsResponse = restClient.getAllTransactions(bankId, accountId, viewId);
+    }
+
+    private void thenSomeTransactionsShouldBeReturned() {
+        assertNotNull(transactionsResponse);
+        assertNotNull(transactionsResponse.getTransactions());
+        assertNotEquals(0, transactionsResponse.getTransactions().size());
+
+    }
+
     private void givenCurrentAccountBalance() {
         balance = restClient.getAccountBalance(bankId, accountId, viewId);
     }
@@ -56,7 +78,7 @@ public class RestClientTest {
         double oldBalanceNumeric = Double.valueOf(balance.split(" ")[0]);
         double newBalanceNumeric = Double.valueOf(newBalance.split(" ")[0]);
         double DELTA = 1e-15;
-        assertEquals(oldBalanceNumeric - transferAmount, newBalanceNumeric,DELTA);
+        assertEquals(oldBalanceNumeric - transferAmount, newBalanceNumeric, DELTA);
     }
 
     //    @Test
@@ -169,4 +191,5 @@ public class RestClientTest {
     private String balance;
 
     private String transactionId;
+    TransactionsResponse transactionsResponse;
 }

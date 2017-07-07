@@ -2,6 +2,7 @@ package alexa.skills.backbase.lib;
 
 import alexa.skills.backbase.model.AccountDetails;
 import alexa.skills.backbase.model.Balance;
+import alexa.skills.backbase.model.TransactionsResponse;
 import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -81,7 +82,7 @@ public class RestClient {
                     .asJson();
 
             Gson gson = new Gson();
-            AccountDetails accountDetails = gson.fromJson(((JSONObject) response.getBody().getObject()).toString(), AccountDetails.class);
+            AccountDetails accountDetails = gson.fromJson((response.getBody().getObject()).toString(), AccountDetails.class);
             return accountDetails;
         } catch (UnirestException e) {
             log.error("get Account Details request failed: ", e);
@@ -115,7 +116,7 @@ public class RestClient {
 
             String token = login();
 
-            String transactionBody = "{  \"bank_id\":\""+otherBankId+"\",  \"account_id\":\""+otherAccountId+"\",  \"amount\":\""+amount+"\"}";
+            String transactionBody = "{  \"bank_id\":\"" + otherBankId + "\",  \"account_id\":\"" + otherAccountId + "\",  \"amount\":\"" + amount + "\"}";
 
             HttpResponse<JsonNode> response = UNIREST.post(HOST + BASE_PATH + "/banks/" + bankId + "/accounts/" + accountId + "/" + viewId + "/transactions")
                     .header(AUTHORIZATION_HEADER, "DirectLogin " + CONSUMER_CREDENTIALS + COMMA + "token=" + token)
@@ -125,6 +126,20 @@ public class RestClient {
             return (String) response.getBody().getObject().get(TRANSACTION_ID);
         } catch (UnirestException e) {
             log.error("Login request failed: ", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public TransactionsResponse getAllTransactions(String bankId, String accountId, String viewId) {
+        try {
+            HttpResponse<JsonNode> response = UNIREST.get(HOST + BASE_PATH + "/banks/" + bankId + "/accounts/" + accountId + "/" + viewId + "/transactions")
+                    .asJson();
+
+            Gson gson = new Gson();
+            TransactionsResponse transactionsResponse = gson.fromJson(response.getBody().getObject().toString(), TransactionsResponse.class);
+            return transactionsResponse;
+        } catch (UnirestException e) {
+            log.error("get Account Details request failed: ", e);
             throw new RuntimeException(e);
         }
     }

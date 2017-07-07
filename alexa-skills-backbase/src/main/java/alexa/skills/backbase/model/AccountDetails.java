@@ -8,13 +8,13 @@ import java.util.Map;
 public class AccountDetails {
 
     private String id;
-    private Object label;
+    private String label;
     private String number;
     private List<Owner> owners = null;
-    private Object type;
+    private String type;
     private Balance balance;
-    private Object iBAN;
-    private Object swiftBic;
+    private String iBAN;
+    private String swiftBic;
     private List<ViewsAvailable> viewsAvailable = null;
     private String bankId;
     private AccountRouting accountRouting;
@@ -27,11 +27,11 @@ public class AccountDetails {
         this.id = id;
     }
 
-    public Object getLabel() {
+    public String getLabel() {
         return label;
     }
 
-    public void setLabel(Object label) {
+    public void setLabel(String label) {
         this.label = label;
     }
 
@@ -51,11 +51,11 @@ public class AccountDetails {
         this.owners = owners;
     }
 
-    public Object getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Object type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -67,19 +67,19 @@ public class AccountDetails {
         this.balance = balance;
     }
 
-    public Object getIBAN() {
+    public String getIBAN() {
         return iBAN;
     }
 
-    public void setIBAN(Object iBAN) {
+    public void setIBAN(String iBAN) {
         this.iBAN = iBAN;
     }
 
-    public Object getSwiftBic() {
+    public String getSwiftBic() {
         return swiftBic;
     }
 
-    public void setSwiftBic(Object swiftBic) {
+    public void setSwiftBic(String swiftBic) {
         this.swiftBic = swiftBic;
     }
 

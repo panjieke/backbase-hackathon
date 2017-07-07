@@ -6,22 +6,22 @@ import java.util.Map;
 
 public class AccountRouting {
 
-    private Object scheme;
-    private Object address;
+    private String scheme;
+    private String address;
 
-    public Object getScheme() {
+    public String getScheme() {
         return scheme;
     }
 
-    public void setScheme(Object scheme) {
+    public void setScheme(String scheme) {
         this.scheme = scheme;
     }
 
-    public Object getAddress() {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(Object address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 }

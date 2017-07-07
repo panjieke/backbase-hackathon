@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 public class RestClientTest {
 
 
-
     @Test
     public void login() throws Exception {
         whenRequestLogin();
@@ -38,6 +37,28 @@ public class RestClientTest {
         thenAccountBalanceIsReturned();
     }
 
+    @Test
+    public void transferAmount() {
+        givenAccountDetails();
+        givenOtherAccountDetails();
+        givenCurrentAccountBalance();
+        whenRequestTransferAmount();
+        thenTransactionIdShouldBeReturned();
+        andBalanceShouldBeUpdated();
+    }
+
+    private void givenCurrentAccountBalance() {
+        balance = restClient.getAccountBalance(bankId, accountId, viewId);
+    }
+
+    private void andBalanceShouldBeUpdated() {
+        String newBalance = restClient.getAccountBalance(bankId, accountId, viewId);
+        double oldBalanceNumeric = Double.valueOf(balance.split(" ")[0]);
+        double newBalanceNumeric = Double.valueOf(newBalance.split(" ")[0]);
+        double DELTA = 1e-15;
+        assertEquals(oldBalanceNumeric - transferAmount, newBalanceNumeric,DELTA);
+    }
+
     //    @Test
     public void getUser() throws Exception {
         givenAccessToken();
@@ -45,7 +66,7 @@ public class RestClientTest {
         thenUserIs("Jannie");
     }
 
-//    @Test
+    //    @Test
     public void getNextAppointment() throws Exception {
         givenAccessToken();
         whenRequestNextAppointment();
@@ -87,6 +108,12 @@ public class RestClientTest {
         viewId = "owner";
     }
 
+    private void givenOtherAccountDetails() {
+        otherBankId = "test-bank";
+        otherAccountId = "10800111111";
+        transferAmount = 100.00;
+    }
+
     private void whenRequestAccountDetails() {
         accountDetails = restClient.getAccountDetails(bankId, accountId, viewId);
     }
@@ -96,12 +123,13 @@ public class RestClientTest {
     }
 
     private void andAccountIdShouldBeTheSame() {
-        assertEquals(accountId,accountDetails.getId());
+        assertEquals(accountId, accountDetails.getId());
     }
 
     private void whenRequestAccountDisplayName() {
         displayName = restClient.getAccountDisplayName(bankId, accountId, viewId);
     }
+
     private void thenDisplayNameIsReturned() {
         assertNotNull(displayName);
     }
@@ -109,8 +137,17 @@ public class RestClientTest {
     private void whenRequestAccountBalance() {
         balance = restClient.getAccountBalance(bankId, accountId, viewId);
     }
+
     private void thenAccountBalanceIsReturned() {
         assertNotNull(balance);
+    }
+
+    private void whenRequestTransferAmount() {
+        transactionId = restClient.transferAmount(bankId, accountId, viewId, otherBankId, otherAccountId, transferAmount);
+    }
+
+    private void thenTransactionIdShouldBeReturned() {
+        assertNotNull(transactionId);
     }
 
     private RestClient restClient = new RestClient();
@@ -122,8 +159,14 @@ public class RestClientTest {
     private String accountId;
     private String viewId;
 
+    private String otherBankId;
+    private String otherAccountId;
+    private double transferAmount;
+
     private AccountDetails accountDetails;
 
     private String displayName;
     private String balance;
+
+    private String transactionId;
 }

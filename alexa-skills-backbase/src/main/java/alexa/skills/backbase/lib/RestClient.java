@@ -24,11 +24,16 @@ public class RestClient {
     private static final String AUTHORIZATION = "Authorization";
     private static final String ACCESS_TOKEN = "token";
     private static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String CREDENTIALS = "username=\"mobiquitybbhack\", password=\"123456789@Mo\"";
+    public static final String CONSUMER = "consumer_key=\"hrfs2sfxnk4fnj4god3ig0fligpgqabflatbkli0\"";
+    public static final String COMMA = ", ";
+    public static final String CONSUMER_CREDENTIALS = CREDENTIALS + COMMA + CONSUMER;
+    public static final String TRANSACTION_ID = "transaction_id";
 
     public String login() {
         try {
             HttpResponse<JsonNode> response = UNIREST.post(HOST + "/my/logins/direct")
-                    .header(AUTHORIZATION_HEADER, "DirectLogin username=\"mobiquitybbhack\", password=\"123456789@Mo\", consumer_key=\"hrfs2sfxnk4fnj4god3ig0fligpgqabflatbkli0\"")
+                    .header(AUTHORIZATION_HEADER, "DirectLogin " + CONSUMER_CREDENTIALS)
                     .header(CONTENT_TYPE, APPLICATION_JSON)
                     .body(DEFAULT_LOGIN).asJson();
             return (String) response.getBody().getObject().get(ACCESS_TOKEN);
@@ -103,5 +108,24 @@ public class RestClient {
     public String getAccountBalance(String bankId, String accountId, String viewId) {
         Balance balance = getAccountDetails(bankId, accountId, viewId).getBalance();
         return balance.getAmount() + " " + balance.getCurrency();
+    }
+
+    public String transferAmount(String bankId, String accountId, String viewId, String otherBankId, String otherAccountId, double amount) {
+        try {
+
+            String token = login();
+
+            String transactionBody = "{  \"bank_id\":\""+otherBankId+"\",  \"account_id\":\""+otherAccountId+"\",  \"amount\":\""+amount+"\"}";
+
+            HttpResponse<JsonNode> response = UNIREST.post(HOST + BASE_PATH + "/banks/" + bankId + "/accounts/" + accountId + "/" + viewId + "/transactions")
+                    .header(AUTHORIZATION_HEADER, "DirectLogin " + CONSUMER_CREDENTIALS + COMMA + "token=" + token)
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .body(transactionBody).asJson();
+
+            return (String) response.getBody().getObject().get(TRANSACTION_ID);
+        } catch (UnirestException e) {
+            log.error("Login request failed: ", e);
+            throw new RuntimeException(e);
+        }
     }
 }

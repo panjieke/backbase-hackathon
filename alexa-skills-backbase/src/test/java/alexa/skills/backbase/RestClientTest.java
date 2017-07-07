@@ -1,11 +1,14 @@
 package alexa.skills.backbase;
 
 import alexa.skills.backbase.lib.RestClient;
+import alexa.skills.backbase.model.AccountDetails;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class RestClientTest {
+
+
 
     @Test
     public void login() throws Exception {
@@ -13,7 +16,15 @@ public class RestClientTest {
         thenTokenIsReturned();
     }
 
-//    @Test
+    @Test
+    public void getAccount() {
+        givenAccountDetails();
+        whenRequestAccountDetails();
+        thenAccountDetailsIsReturned();
+        andAccountIdShouldBeTheSame();
+    }
+
+    //    @Test
     public void getUser() throws Exception {
         givenAccessToken();
         whenRequestUser();
@@ -56,8 +67,32 @@ public class RestClientTest {
         assertEquals(expectedMessage, message);
     }
 
+    private void givenAccountDetails() {
+        bankId = "test-bank";
+        accountId = "RR-000001";
+        viewId = "owner";
+    }
+
+    private void whenRequestAccountDetails() {
+        accountDetails = restClient.getAccountDetails(bankId, accountId, viewId);
+    }
+
+    private void thenAccountDetailsIsReturned() {
+        assertNotNull(accountDetails);
+    }
+
+    private void andAccountIdShouldBeTheSame() {
+        assertEquals(accountId,accountDetails.getId());
+    }
+
     private RestClient restClient = new RestClient();
     private String token;
     private String userName;
     private String message;
+
+    private String bankId;
+    private String accountId;
+    private String viewId;
+
+    private AccountDetails accountDetails;
 }

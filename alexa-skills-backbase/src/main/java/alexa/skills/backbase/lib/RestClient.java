@@ -1,5 +1,7 @@
 package alexa.skills.backbase.lib;
 
+import alexa.skills.backbase.model.AccountDetails;
+import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -15,6 +17,7 @@ public class RestClient {
     private static final Logger log = LoggerFactory.getLogger(RestClient.class);
     private static final Unirest UNIREST = new Unirest();
     private static final String HOST = "https://apisandbox.openbankproject.com";
+    private static final String BASE_PATH = "/obp/v1.2.1";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String AUTHORIZATION = "Authorization";
@@ -38,7 +41,7 @@ public class RestClient {
     public String getUserName(String token) {
         try {
             HttpResponse<JsonNode> response = UNIREST.get(HOST + "/rest/entities/USERS/instances/jannie").header(AUTHORIZATION, "BEARER " + token).asJson();
-            return (String) ((JSONObject)response.getBody().getObject().get("entityInstance")).get("firstName");
+            return (String) ((JSONObject) response.getBody().getObject().get("entityInstance")).get("firstName");
         } catch (UnirestException e) {
             log.error("Get User request failed: ", e);
             throw new RuntimeException(e);
@@ -61,6 +64,21 @@ public class RestClient {
             return null;
         } catch (UnirestException e) {
             log.error("Get Next Appointment request failed: ", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public AccountDetails getAccountDetails(String bankId, String accountId, String viewId) {
+        try {
+            HttpResponse<JsonNode> response = UNIREST.get(HOST + BASE_PATH + "/banks/" + bankId + "/accounts/" + accountId + "/" + viewId + "/account")
+                    //.header(AUTHORIZATION, "BEARER " + token)
+                    .asJson();
+
+            Gson gson = new Gson();
+            AccountDetails accountDetails = gson.fromJson(((JSONObject) response.getBody().getObject()).toString(), AccountDetails.class);
+            return accountDetails;
+        } catch (UnirestException e) {
+            log.error("Get User request failed: ", e);
             throw new RuntimeException(e);
         }
     }

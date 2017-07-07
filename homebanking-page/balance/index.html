@@ -57,7 +57,7 @@
                         <div class="col-sm-6 col-sm-offset-3 form-box">
                         	<div class="form-top">
                         		
-                        			<h3>John's Bank Statement</h3>
+                        			<h3><span id="holdersName"></span> Statement</h3>
                                     <div>
                                         <table id="demo-table" width="100%">
                                           <thead>
@@ -67,6 +67,9 @@
                                             </tr>
                                           </thead>
                                         </table>
+                                    </div>
+                                    <div>
+                                       <b><h3> Balance: <span id="balance"></span> USD</h3> </b>
                                     </div>    
                        
                     </div>
@@ -89,14 +92,17 @@
 
        <script>  
      
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
 
-       function transformJSON(inputJSON){
+       function transformBankStatementJSON(inputJSON){
          var len = inputJSON.transactions.length,
              outputJSON = new Array(),
              i;
 
          for ( i=0; i < len; i+=1 ) {
-            outputJSON.push( { "transaction": "Bank Transfer to "+inputJSON.transactions[i].other_account.holder.name , "amount": inputJSON.transactions[i].details.value.amount+" USD" } );   
+            outputJSON.push( { "transaction": "Transfer to "+capitalizeFirstLetter(inputJSON.transactions[i].other_account.holder.name) , "amount": inputJSON.transactions[i].details.value.amount+" USD" } );   
          }
          return outputJSON;
        }
@@ -114,7 +120,7 @@
         };
 
         updateBankStatement(function(output){
-            var transactionsList = transformJSON(output);
+            var transactionsList = transformBankStatementJSON(output);
             $('#demo-table').simple_datagrid(
               {
                 data: transactionsList
@@ -123,15 +129,39 @@
             //console.log(JSON.stringify(transactionsList));
         });
 
+
+        function updateBankBalance(handleData) {
+          $.ajax({
+            type: 'GET',
+            url:"https://apisandbox.openbankproject.com/obp/v1.2.1/banks/test-bank/accounts/RR-000001/owner/account",  
+            contentType: 'application/json; charset=utf-8',
+            success:function(data) {
+              handleData(data); 
+            }
+          });
+        };
+
+        updateBankBalance(function(output){
+            //console.log(JSON.stringify(output));
+            $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
+            $('#balance').text(output.balance.amount);          
+        });
+
         setInterval(function(){
                 updateBankStatement(function(output){
-                $('#demo-table').simple_datagrid('loadData', output);
-                console.log(JSON.stringify(output));
+                    var transactionsList = transformBankStatementJSON(output);
+                    $('#demo-table').simple_datagrid('loadData', transactionsList);
+                    console.log("Transactions List: "+JSON.stringify(transactionsList));
             });
-      },60000);
+
+                updateBankBalance(function(output){
+                    $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
+                    $('#balance').text(output.balance.amount);
+                    console.log("Current Balance: "+output.balance.amount);          
+            });    
+      },2000);
 
     
-
        </script>
 
     </body>

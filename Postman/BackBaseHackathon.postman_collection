@@ -1,0 +1,47 @@
+{
+	"variables": [],
+	"info": {
+		"name": "BackBaseHackathon",
+		"_postman_id": "b7347352-a894-4853-20a1-f8bc5654714d",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"url": "https://apisandbox.openbankproject.com/my/logins/direct",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "DirectLogin username=\"mobiquitybbhack\", password=\"123456789@Mo\", consumer_key=\"hrfs2sfxnk4fnj4god3ig0fligpgqabflatbkli0\"",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GetAccountDetails",
+			"request": {
+				"url": "https://apisandbox.openbankproject.com/obp/v1.2.1/banks/test-bank/accounts/RR-000001/owner/account",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

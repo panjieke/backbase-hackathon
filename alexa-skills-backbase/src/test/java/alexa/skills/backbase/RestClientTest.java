@@ -1,12 +1,13 @@
 package alexa.skills.backbase;
 
 import alexa.skills.backbase.lib.RestClient;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class RestClientTest {
 
-//    @Test
+    @Test
     public void login() throws Exception {
         whenRequestLogin();
         thenTokenIsReturned();

@@ -14,16 +14,25 @@ public class MyBankSpeechlet implements SpeechletV2 {
 
     private static final Logger log = LoggerFactory.getLogger(MyBankSpeechlet.class);
     private final RestClient restClient = new RestClient();
-
     private static final String MY_BANK_CART = "MyBank";
     private static final String STOP_INTENT = "AMAZON.StopIntent";
     private static final String NO_INTENT = "AMAZON.NoIntent";
+
     private static final String YES_INTENT = "AMAZON.YesIntent";
     private static final String STATUS_INTENT = "GetStatus";
+    private static final String PAYMENT_REQUEST_INTENT = "PaymentRequest";
+    private static final String TRANSFER_INTENT = "Transfer";
+    private static final String CREDIT_CONFIRMATION_INTENT = "CreditConfirmation";
+
+    private static final String PERSON_NAME_SLOT = "PersonName";
+    private static final String AMOUNT_SLOT = "Amount";
+    private static final String MONEY_SLOT = "Money";
+    private static final String CREDIT_SLOT = "CreditName";
 
     private static final String WELCOME_MESSAGE = "Hi %s, Welcome to My Bank.";
     private static final String GOODBYE_MESSAGE = "Thank you and enjoy your day.";
-    private static final String DEFAULT_STATUS_MESSAGE = "";
+    private static final String ACCOUNT_BALANCE_MESSAGE = "You have 1000 euros in your debit account.";
+    private static final String PAYMENT_REQUEST_MESSAGE = "The payment has been sent to %s";
     private static final String UNKNOWN_MESSAGE = "Sorry, I could not understand your question.";
 
     @Override
@@ -59,6 +68,15 @@ public class MyBankSpeechlet implements SpeechletV2 {
                 return getGoodByeResponse();
             case STATUS_INTENT:
                 return getStatusResponse();
+            case PAYMENT_REQUEST_INTENT: {
+                return sendPaymentRequest(intent.getSlot(PERSON_NAME_SLOT).getValue());
+            }
+            case TRANSFER_INTENT: {
+                return sendTransferRequest(intent.getSlot(AMOUNT_SLOT).getValue(), intent.getSlot(MONEY_SLOT).getValue());
+            }
+            case CREDIT_CONFIRMATION_INTENT: {
+                return getCreditConfirmation(intent.getSlot(CREDIT_SLOT).getValue());
+            }
             default:
                 return getUnknownCommandResponse();
         }
@@ -93,21 +111,21 @@ public class MyBankSpeechlet implements SpeechletV2 {
     }
 
     private SpeechletResponse getStatusResponse() {
-        String message = null;
+        return createSimpleResponse(ACCOUNT_BALANCE_MESSAGE);
+    }
 
-        try {
-            String token = restClient.login();
-            String userName = restClient.getUserName(token);
-            message = restClient.getNextAppointment(token);
-            if (message == null || message.isEmpty()) {
-                message = DEFAULT_STATUS_MESSAGE;
-            } else {
-                message = "Hi " + userName + ", " + message;
-            }
-        } catch (Exception e) {
-            message = DEFAULT_STATUS_MESSAGE;
-        }
+    private SpeechletResponse sendPaymentRequest(String contact) {
+        String message = String.format(PAYMENT_REQUEST_MESSAGE, contact);
+        return createSimpleResponse(message);
+    }
 
+    private SpeechletResponse sendTransferRequest(String amount, String money) {
+        String message = String.format("%s %s has been transferred.", amount, money);
+        return createSimpleResponse(message);
+    }
+
+    private SpeechletResponse getCreditConfirmation(String creditName) {
+        String message = String.format("%s has been transferred.", creditName);
         return createSimpleResponse(message);
     }
 

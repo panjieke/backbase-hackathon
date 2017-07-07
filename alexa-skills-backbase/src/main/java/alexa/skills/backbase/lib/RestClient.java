@@ -14,15 +14,19 @@ public class RestClient {
     private static final String DEFAULT_LOGIN = "";
     private static final Logger log = LoggerFactory.getLogger(RestClient.class);
     private static final Unirest UNIREST = new Unirest();
-    private static final String HOST = "";
+    private static final String HOST = "https://apisandbox.openbankproject.com";
     private static final String CONTENT_TYPE = "Content-Type";
-    private static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded";
+    private static final String APPLICATION_JSON = "application/json";
     private static final String AUTHORIZATION = "Authorization";
-    private static final String ACCESS_TOKEN = "access_token";
+    private static final String ACCESS_TOKEN = "token";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     public String login() {
         try {
-            HttpResponse<JsonNode> response = UNIREST.post(HOST + "/rest/token").header(CONTENT_TYPE, APPLICATION_X_WWW_FORM_URLENCODED).body(DEFAULT_LOGIN).asJson();
+            HttpResponse<JsonNode> response = UNIREST.post(HOST + "/my/logins/direct")
+                    .header(AUTHORIZATION_HEADER, "DirectLogin username=\"mobiquitybbhack\", password=\"123456789@Mo\", consumer_key=\"hrfs2sfxnk4fnj4god3ig0fligpgqabflatbkli0\"")
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .body(DEFAULT_LOGIN).asJson();
             return (String) response.getBody().getObject().get(ACCESS_TOKEN);
         } catch (UnirestException e) {
             log.error("Login request failed: ", e);

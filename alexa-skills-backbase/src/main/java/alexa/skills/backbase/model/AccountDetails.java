@@ -18,7 +18,6 @@ public class AccountDetails {
     private List<ViewsAvailable> viewsAvailable = null;
     private String bankId;
     private AccountRouting accountRouting;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public String getId() {
         return id;
@@ -106,14 +105,6 @@ public class AccountDetails {
 
     public void setAccountRouting(AccountRouting accountRouting) {
         this.accountRouting = accountRouting;
-    }
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }

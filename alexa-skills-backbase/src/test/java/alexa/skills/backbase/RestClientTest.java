@@ -24,6 +24,20 @@ public class RestClientTest {
         andAccountIdShouldBeTheSame();
     }
 
+    @Test
+    public void getDisplayName() {
+        givenAccountDetails();
+        whenRequestAccountDisplayName();
+        thenDisplayNameIsReturned();
+    }
+
+    @Test
+    public void getAccountBalance() {
+        givenAccountDetails();
+        whenRequestAccountBalance();
+        thenAccountBalanceIsReturned();
+    }
+
     //    @Test
     public void getUser() throws Exception {
         givenAccessToken();
@@ -85,6 +99,20 @@ public class RestClientTest {
         assertEquals(accountId,accountDetails.getId());
     }
 
+    private void whenRequestAccountDisplayName() {
+        displayName = restClient.getAccountDisplayName(bankId, accountId, viewId);
+    }
+    private void thenDisplayNameIsReturned() {
+        assertNotNull(displayName);
+    }
+
+    private void whenRequestAccountBalance() {
+        balance = restClient.getAccountBalance(bankId, accountId, viewId);
+    }
+    private void thenAccountBalanceIsReturned() {
+        assertNotNull(balance);
+    }
+
     private RestClient restClient = new RestClient();
     private String token;
     private String userName;
@@ -95,4 +123,7 @@ public class RestClientTest {
     private String viewId;
 
     private AccountDetails accountDetails;
+
+    private String displayName;
+    private String balance;
 }

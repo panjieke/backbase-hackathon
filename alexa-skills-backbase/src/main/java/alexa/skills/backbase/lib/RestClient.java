@@ -1,6 +1,7 @@
 package alexa.skills.backbase.lib;
 
 import alexa.skills.backbase.model.AccountDetails;
+import alexa.skills.backbase.model.Balance;
 import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -78,8 +79,29 @@ public class RestClient {
             AccountDetails accountDetails = gson.fromJson(((JSONObject) response.getBody().getObject()).toString(), AccountDetails.class);
             return accountDetails;
         } catch (UnirestException e) {
-            log.error("Get User request failed: ", e);
+            log.error("get Account Details request failed: ", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public String getAccountDisplayName(String bankId, String accountId, String viewId) {
+        try {
+            HttpResponse<JsonNode> response = UNIREST.get(HOST + BASE_PATH + "/banks/" + bankId + "/accounts/" + accountId + "/" + viewId + "/account")
+                    //.header(AUTHORIZATION, "BEARER " + token)
+                    .asJson();
+
+            JSONArray owners = (JSONArray) response.getBody().getObject().get("owners");
+            JSONObject mainOwner = ((JSONObject) owners.get(0));
+
+            return (String) mainOwner.get("display_name");
+        } catch (UnirestException e) {
+            log.error("get Account Display Name request failed: ", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getAccountBalance(String bankId, String accountId, String viewId) {
+        Balance balance = getAccountDetails(bankId, accountId, viewId).getBalance();
+        return balance.getAmount() + " " + balance.getCurrency();
     }
 }

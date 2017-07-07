@@ -71,7 +71,6 @@ public class ViewsAvailable {
     private Boolean canSeeTransactionType;
     private Boolean canSeeUrl;
     private Boolean canSeeWhereTag;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public String getId() {
         return id;
@@ -591,14 +590,6 @@ public class ViewsAvailable {
 
     public void setCanSeeWhereTag(Boolean canSeeWhereTag) {
         this.canSeeWhereTag = canSeeWhereTag;
-    }
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }

@@ -6,7 +6,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Trusty Bank Statement</title>
+        <title>MyBank Statement</title>
 
         <!-- CSS -->
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
@@ -45,7 +45,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-8 col-sm-offset-2 text">
-                            <h1><strong>Trust</strong> Banking</h1>
+                            <h1><strong>My</strong>Bank</h1>
                             <div class="description">
                             	<p>
 	                            	
@@ -57,7 +57,7 @@
                         <div class="col-sm-6 col-sm-offset-3 form-box">
                         	<div class="form-top">
                         		
-                        			<h3><span id="holdersName"></span> Statement</h3>
+                        			<h3>Rick's Statement</h3>
                                      <div>
                                        <b><h3><span id="balance"></span></h3> </b>
                                     </div>  
@@ -136,7 +136,7 @@
 
         updateBankBalance(function(output){
             //console.log(JSON.stringify(output));
-            $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
+            //$('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
             $('#balance').text("Balance: "+output.balance.amount+" USD");          
         });
 
@@ -153,7 +153,7 @@
         setInterval(function(){
                
             updateBankBalance(function(output){
-                    $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
+                    //$('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
                     $('#balance').text("Balance: "+output.balance.amount+" USD");
                     console.log("Current Balance: "+output.balance.amount);          
             }); 

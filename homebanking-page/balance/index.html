@@ -58,6 +58,9 @@
                         	<div class="form-top">
                         		
                         			<h3><span id="holdersName"></span> Statement</h3>
+                                     <div>
+                                       <b><h3><span id="balance"></span></h3> </b>
+                                    </div>  
                                     <div>
                                         <table id="demo-table" width="100%">
                                           <thead>
@@ -68,9 +71,7 @@
                                           </thead>
                                         </table>
                                     </div>
-                                    <div>
-                                       <b><h3> Balance: <span id="balance"></span> USD</h3> </b>
-                                    </div>    
+                                     
                        
                     </div>
                    
@@ -113,11 +114,31 @@
             type: 'GET',
             url:"https://apisandbox.openbankproject.com/obp/v1.2.1/banks/test-bank/accounts/RR-000001/owner/transactions",  
             contentType: 'application/json; charset=utf-8',
+            timeout: 20000, 
             success:function(data) {
               handleData(data); 
             }
           });
         };
+
+    
+        function updateBankBalance(handleData) {
+          $.ajax({
+            type: 'GET',
+            url:"https://apisandbox.openbankproject.com/obp/v1.2.1/banks/test-bank/accounts/RR-000001/owner/account",  
+            contentType: 'application/json; charset=utf-8',
+            timeout: 20000, 
+            success:function(data) {
+              handleData(data); 
+            }
+          });
+        };
+
+        updateBankBalance(function(output){
+            //console.log(JSON.stringify(output));
+            $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
+            $('#balance').text("Balance: "+output.balance.amount+" USD");          
+        });
 
         updateBankStatement(function(output){
             var transactionsList = transformBankStatementJSON(output);
@@ -129,37 +150,23 @@
             //console.log(JSON.stringify(transactionsList));
         });
 
-
-        function updateBankBalance(handleData) {
-          $.ajax({
-            type: 'GET',
-            url:"https://apisandbox.openbankproject.com/obp/v1.2.1/banks/test-bank/accounts/RR-000001/owner/account",  
-            contentType: 'application/json; charset=utf-8',
-            success:function(data) {
-              handleData(data); 
-            }
-          });
-        };
-
-        updateBankBalance(function(output){
-            //console.log(JSON.stringify(output));
-            $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
-            $('#balance').text(output.balance.amount);          
-        });
-
         setInterval(function(){
-                updateBankStatement(function(output){
+               
+            updateBankBalance(function(output){
+                    $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
+                    $('#balance').text("Balance: "+output.balance.amount+" USD");
+                    console.log("Current Balance: "+output.balance.amount);          
+            }); 
+
+
+            updateBankStatement(function(output){
                     var transactionsList = transformBankStatementJSON(output);
                     $('#demo-table').simple_datagrid('loadData', transactionsList);
                     console.log("Transactions List: "+JSON.stringify(transactionsList));
             });
 
-                updateBankBalance(function(output){
-                    $('#holdersName').text(capitalizeFirstLetter(output.owners[0].display_name)+"'s");
-                    $('#balance').text(output.balance.amount);
-                    console.log("Current Balance: "+output.balance.amount);          
-            });    
-      },2000);
+                  
+      },5000);
 
     
        </script>

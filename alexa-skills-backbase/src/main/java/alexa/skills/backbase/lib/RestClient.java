@@ -123,12 +123,16 @@ public class RestClient {
                     .header(CONTENT_TYPE, APPLICATION_JSON)
                     .body(transactionBody).asJson();
 
-            return (String) response.getBody().getObject().get(TRANSACTION_ID);
+            String transactionId = (String) response.getBody().getObject().get(TRANSACTION_ID);
+            logTransaction(getTransactionDetailsById(bankId, accountId, viewId, transactionId));
+
+            return transactionId;
         } catch (UnirestException e) {
             log.error("Login request failed: ", e);
             throw new RuntimeException(e);
         }
     }
+
 
     public TransactionsResponse getAllTransactions(String bankId, String accountId, String viewId) {
         try {
@@ -141,6 +145,28 @@ public class RestClient {
         } catch (UnirestException e) {
             log.error("get Account Details request failed: ", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    public String getTransactionDetailsById(String bankId, String accountId, String viewId, String transactionId) {
+        try {
+            HttpResponse<JsonNode> response = UNIREST.get(HOST + BASE_PATH + "/banks/" + bankId + "/accounts/" + accountId + "/" + viewId + "/transactions/" + transactionId + "/transaction")
+                    .asJson();
+
+            return response.getBody().getObject().toString();
+        } catch (UnirestException e) {
+            log.error("get Account Details request failed: ", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void logTransaction(String transactionBody) {
+        try {
+            UNIREST.put("https://api.myjson.com/bins/1fisnb")
+                    .header(CONTENT_TYPE, APPLICATION_JSON)
+                    .body(transactionBody).asJson();
+        } catch (UnirestException e) {
+            e.printStackTrace();
         }
     }
 }

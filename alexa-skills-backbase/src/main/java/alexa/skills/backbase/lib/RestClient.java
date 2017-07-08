@@ -4,6 +4,7 @@ import alexa.skills.backbase.model.AccountDetails;
 import alexa.skills.backbase.model.Balance;
 import alexa.skills.backbase.model.TransactionsResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -12,6 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class RestClient {
 
@@ -30,6 +34,7 @@ public class RestClient {
     public static final String COMMA = ", ";
     public static final String CONSUMER_CREDENTIALS = CREDENTIALS + COMMA + CONSUMER;
     public static final String TRANSACTION_ID = "transaction_id";
+    private static final Set<String> TRANSACTIONS = new HashSet<>();
 
     public String login() {
         try {
@@ -124,7 +129,7 @@ public class RestClient {
                     .body(transactionBody).asJson();
 
             String transactionId = (String) response.getBody().getObject().get(TRANSACTION_ID);
-            logTransaction(getTransactionDetailsById(bankId, accountId, viewId, transactionId));
+            //logTransaction(getTransactionDetailsById(bankId, accountId, viewId, transactionId));
 
             return transactionId;
         } catch (UnirestException e) {
@@ -162,6 +167,19 @@ public class RestClient {
 
     private void logTransaction(String transactionBody) {
         try {
+            TRANSACTIONS.add(transactionBody);
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("{ \"transactions\": [ ");
+            for (String t : TRANSACTIONS) {
+                sb.append(t).append(COMMA);
+            }
+            int lastComma = sb.lastIndexOf(COMMA);
+            sb.replace(lastComma,lastComma+1, "");
+            sb.append("] }");
+
+
             UNIREST.put("https://api.myjson.com/bins/1fisnb")
                     .header(CONTENT_TYPE, APPLICATION_JSON)
                     .body(transactionBody).asJson();

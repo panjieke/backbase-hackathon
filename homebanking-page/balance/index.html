@@ -57,9 +57,9 @@
                         <div class="col-sm-6 col-sm-offset-3 form-box">
                         	<div class="form-top">
                         		
-                        			<h3>Rick's Statement</h3>
+                        			<h3>Rik's Statement</h3>
                                      <div>
-                                       <b><h3><span id="balance"></span></h3> </b>
+                                       <b><h2><span id="balance"></span></h2> </b>
                                     </div>  
                                     <div>
                                         <table id="demo-table" width="100%">
@@ -101,9 +101,14 @@
          var len = inputJSON.transactions.length,
              outputJSON = new Array(),
              i;
+        
 
          for ( i=0; i < len; i+=1 ) {
-            outputJSON.push( { "transaction": "Transfer to "+capitalizeFirstLetter(inputJSON.transactions[i].other_account.holder.name) , "amount": inputJSON.transactions[i].details.value.amount+" USD" } );   
+            if(inputJSON.transactions[i].details.value.amount > 0){
+                 outputJSON.push( { "transaction": "Transfer from savings" , "amount": inputJSON.transactions[i].details.value.amount+" USD" } );
+            }else {
+                 outputJSON.push( { "transaction": "Transfer to Lisa" , "amount": inputJSON.transactions[i].details.value.amount+" USD" } );       
+            }   
          }
          return outputJSON;
        }
@@ -113,6 +118,7 @@
           $.ajax({
             type: 'GET',
             url:"https://apisandbox.openbankproject.com/obp/v1.2.1/banks/test-bank/accounts/RR-000001/owner/transactions",  
+            //url:"https://api.myjson.com/bins/1fisnb",
             contentType: 'application/json; charset=utf-8',
             timeout: 20000, 
             success:function(data) {
